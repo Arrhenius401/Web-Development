@@ -369,7 +369,7 @@ export default {
         const account = this.form.account.trim()
         const password = this.form.password
         let status = this.emailOrPhoneNumber(account)
-        let response = ''
+        let response
         
         // 清除之前的消息
         this.message.text = ''
@@ -378,28 +378,31 @@ export default {
         //调用登录API
         if(status == 'email'){
           //输出日志
-          console.log("邮箱: ",account,";密码: ",password)
+          console.log("发出登录请求: 邮箱 = ",account,";密码 = ",password)
           response = await loginByEmail(account, password);
         }else if(status == 'phoneNunber'){
           //输出日志
-          console.log("电话号码: ",account,";密码: ",password)
+          console.log("发出登录请求: 电话号码 = ",account,";密码 = ",password)
           response = await loginByPhoneNumber(account,password)
         }else{
           //输出日志
-          console.log("登录凭据: ",account,";密码: ",password)
+          console.log("发出非法登录请求，代码错误")
+          return
         }
           
 
         //处理登录结果
-        if(response === "ok"){
+        if(response.status === "ok"){
           //登录成功，跳转到首页
           this.message.text = '登录成功！正在跳转...'
           this.message.type = 'success'
+          //存储token
+          localStorage.setItem("local-token",JSON.stringify(response))
           router.push('/');
-        }else if(response === "wrong password"){
+        }else if(response.status === "wrong password"){
           this.message.text = '密码错误，请重试'
           this.message.type = 'error'
-        }else if(response === "wrong credential"){
+        }else if(response.status === "wrong credential"){
           this.message.text = '不存在该用户，请注册'
           this.message.type = 'error'
         }else{

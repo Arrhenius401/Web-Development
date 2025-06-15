@@ -154,6 +154,19 @@
               </div>
             </div>
           </div>
+
+          <!-- 控制台 -->
+          <!-- 仅当用户拥有管理员权限时可见 -->
+          <div class="bg-white rounded-lg shadow-sm p-6">
+            <h3 class="text-lg font-semibold text-gray-900 mb-4">管理权限</h3>
+            <div class="space-y-3">
+              <div class="flex items-center justify-between">
+                <span class="text-gray-700">控制台</span>
+                <button @click="$router.push('/adminPanel')" class="text-blue-600 hover:text-blue-700 text-sm">进入</button>
+              </div>
+            </div>
+          </div>
+
         </div>
       </div>
     </div>

@@ -28,7 +28,7 @@
           <div class="flex items-center space-x-4">
             <button 
               class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg font-medium transition-colors"
-              @click="$router.push('/post/create')"
+              @click="$router.push('/postCreate')"
             >
               发帖
             </button>
@@ -81,13 +81,13 @@
               v-for="post in posts" 
               :key="post.id"
               class="bg-white rounded-lg shadow-sm p-6 hover:shadow-md transition-shadow cursor-pointer"
-              @click="$router.push(`/post/${post.id}`)"
+              @click="$router.push(`/post/${post.postID}`)"
             >
               <div class="flex items-start space-x-4">
                 <img :src="post.avatar" alt="用户头像" class="w-10 h-10 rounded-full">
                 <div class="flex-1">
                   <div class="flex items-center space-x-2 mb-2">
-                    <span class="font-medium text-gray-900">{{ post.author }}</span>
+                    <span class="font-medium text-gray-900">{{ post.username }}</span>
                     <span class="text-gray-500 text-sm">{{ post.time }}</span>
                     <span v-if="post.isHot" class="px-2 py-1 bg-red-100 text-red-600 text-xs rounded-full">热门</span>
                   </div>
@@ -98,13 +98,13 @@
                       <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
                       </svg>
-                      <span>{{ post.likes }}</span>
+                      <span>{{ post.likeCount }}</span>
                     </div>
                     <div class="flex items-center space-x-1">
                       <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path>
                       </svg>
-                      <span>{{ post.comments }}</span>
+                      <span>{{ post.commentCount }}</span>
                     </div>
                   </div>
                 </div>
@@ -142,6 +142,12 @@
 </template>
 
 <script>
+//在 Vue 3 中，this.$set 已被移除，主要原因是组合式 API 中的响应式系统（如 ref 和 reactive）不再需要它
+//ref和reactive均是用于创建一个响应式对象的函数，其值被包裹在一个带有.value 属性的对象中
+//当这个值被修改时，任何依赖它的 DOM 或计算属性都会自动更新
+import { reactive } from 'vue'
+import { getHomePost } from '../services/api'
+
 export default {
   name: 'UserHome',
   data() {
@@ -155,30 +161,7 @@ export default {
         { key: 'featured', label: '精华' }
       ],
       popularTags: ['好物分享', '技术讨论', '生活日常'],
-      posts: [
-        {
-          id: 1,
-          author: '张三',
-          avatar: '/placeholder.svg?height=40&width=40',
-          time: '2小时前',
-          title: '分享一个超好用的编程工具',
-          summary: '最近发现了一个非常好用的代码编辑器插件，大大提高了我的开发效率...',
-          likes: 128,
-          comments: 45,
-          isHot: true
-        },
-        {
-          id: 2,
-          author: '李四',
-          avatar: '/placeholder.svg?height=40&width=40',
-          time: '4小时前',
-          title: '周末去了一个很棒的咖啡店',
-          summary: '环境很好，咖啡也很香，推荐给大家。店里还有很多有趣的书籍...',
-          likes: 89,
-          comments: 23,
-          isHot: false
-        }
-      ],
+      posts: reactive([]),
       hotTopics: [
         { name: '前端开发', count: '1.2k' },
         { name: '美食推荐', count: '856' },
@@ -186,13 +169,33 @@ export default {
       ]
     }
   },
+  //Vue 的生命周期钩子(mounted、create等)是同步执行的，它们的主要目的是设置组件状态或初始化操作，而不是等待异步操作完成
   mounted() {
     window.addEventListener('scroll', this.handleScroll)
+    this.fetchPosts() //组件搭载后获取帖子
   },
   beforeUnmount() {
     window.removeEventListener('scroll', this.handleScroll)
   },
   methods: {
+    //在JavaScript中
+    //for...in 用于遍历对象的属性名，而非数组元素或其他类型的值，适用于普通对象
+    //for...of 用于遍历可迭代对象的值，适用于数组、字符串等
+    //处理数组时，除非你确实需要索引，否则应优先使用 for...of 或 map
+    async fetchPosts(){
+      try{
+        this.posts = await getHomePost()
+        this.posts = this.posts.map(post => ({
+          ...post,
+          summary: post.content.substring(0, 10) + '...',
+          time: this.$formatTime(new Date(post.createTime)),
+          avatar: null
+        }));
+      }catch(error){
+        console.log("主页获取帖子出错: ", error)
+        console.log(this.$formatTime);
+      } 
+    },
     handleScroll() {
       this.showBackToTop = window.scrollY > 300
     },

@@ -315,6 +315,9 @@ export default {
         password: '',
         confirmPassword: '',
         agreement: false
+      },message: {
+        text: '',
+        type: ''  //'success' or 'error'
       },
       errors: {},
       loading: false,
@@ -523,6 +526,9 @@ export default {
         this.validatePassword(),
         this.validateConfirmPassword()
       ]
+
+      // 清除之前的消息
+      this.message.text = ''
       
       const results = await Promise.all(validations)
       if (!results.every(result => result)) {
@@ -555,12 +561,21 @@ export default {
           //登录成功，跳转到首页
           this.message.text = '登录成功！正在跳转...'
           this.message.type = 'success'
+          //等待两秒
+          //使用立即执行的async函数封装延迟逻辑
+          await new Promise(resolve => setTimeout(resolve, 2000));
           this.$router.push('/login');
-        }else if(response === "wrong password"){
-          this.message.text = '密码错误，请重试'
+        }else if(response === "email and phoneNumber exist"){
+          this.message.text = '邮箱地址与电话号码均已注册，请更换'
           this.message.type = 'error'
-        }else if(response === "wrong credential"){
-          this.message.text = '不存在该用户，请注册'
+        }else if(response === "email exists"){
+          this.message.text = '邮箱地址已注册，请更换'
+          this.message.type = 'error'
+        }else if(response === "phoneNumber exists"){
+          this.message.text = '电话号码已注册，请更换'
+          this.message.type = 'error'
+        }else if(response === "database break"){
+          this.message.text = '数据库崩溃'
           this.message.type = 'error'
         }else{
           this.message.text = '代码错误'
