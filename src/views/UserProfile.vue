@@ -27,7 +27,7 @@
           
           <div class="flex-1">
             <div class="flex items-center justify-between mb-2">
-              <h2 class="text-2xl font-bold text-gray-900">{{ user.nickname }}</h2>
+              <h2 class="text-2xl font-bold text-gray-900">{{ user.username }}</h2>
               <button class="p-2 text-gray-400 hover:text-gray-600">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path>
@@ -157,7 +157,7 @@
 
           <!-- 控制台 -->
           <!-- 仅当用户拥有管理员权限时可见 -->
-          <div class="bg-white rounded-lg shadow-sm p-6">
+          <div v-if="isAdmin" class="bg-white rounded-lg shadow-sm p-6">
             <h3 class="text-lg font-semibold text-gray-900 mb-4">管理权限</h3>
             <div class="space-y-3">
               <div class="flex items-center justify-between">
@@ -174,17 +174,22 @@
 </template>
 
 <script>
+import { checkAdmin, getPostByUserID } from '../services/api';
+
 export default {
   name: 'UserProfile',
   data() {
     return {
+      isAdmin: false,
       activePostTab: 'all',
+
+      //默认用户信息
       user: {
-        nickname: '张三',
+        username: '用户',
         avatar: '/placeholder.svg?height=96&width=96',
-        bio: '热爱技术分享的程序员，喜欢探索新技术',
-        postCount: 25,
-        creditScore: 95
+        bio: '默认用户简介',
+        postCount: 0,
+        creditScore: 100
       },
       postTabs: [
         { key: 'all', label: '全部' },
@@ -214,6 +219,39 @@ export default {
         { name: '兴趣话题', count: 8 },
         { name: '技术文章', count: 15 }
       ]
+    }
+  },mounted() {
+    this.checkAdmin_profile()
+    this.getUserFromToken()
+    this.getMyPost(this.user.userID)
+  },
+  methods: {
+    //前端方法的命名要谨慎
+    //若使用checkAdmin()作为名称，则调用此名称时，方法将指向api.js中的checkAdmin()方法
+    //仅在名称前加入"this."后，方法才指向本文件的checkAdmin()方法
+    async checkAdmin_profile(){
+      try{
+        const localToken = JSON.parse(window.localStorage.getItem('local-token'))
+        console.log("profile界面所传输token: ", localToken)
+        this.isAdmin = await checkAdmin(localToken)
+        console.log("管理身份认证状态: ", this.isAdmin)
+      }catch(error){
+        console.log("管理身份认证失败")
+      }
+    },
+    async getUserFromToken(){
+      //还原本地token
+      let localToken = JSON.parse(window.localStorage.getItem('local-token'))
+      this.user = localToken.user
+    },
+    async getMyPost(userID){
+      console.log("userID: ", userID)
+      try{
+        this.myPosts = await getPostByUserID(userID)
+      }catch(error){
+        console.log("获取本机用户创建帖子的请求失败: ", error)
+      }
+      
     }
   }
 }

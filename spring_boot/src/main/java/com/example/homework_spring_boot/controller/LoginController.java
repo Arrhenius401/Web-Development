@@ -2,7 +2,8 @@ package com.example.homework_spring_boot.controller;
 
 import com.example.homework_spring_boot.entity.LoginRequest;
 import com.example.homework_spring_boot.entity.User;
-import com.example.homework_spring_boot.mapper.UserMapper;
+import com.example.homework_spring_boot.entity.LocalToken;
+import com.example.homework_spring_boot.service.LoginService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -13,8 +14,7 @@ public class LoginController {
 
     //接入数据库中user图表
     @Autowired
-    UserMapper userMapper;
-
+    private LoginService loginService;
 
     //联网测试方法
     @RequestMapping("/api/hello")
@@ -25,29 +25,31 @@ public class LoginController {
     //数据库测试方法
     @RequestMapping("/api/getUser")
     public List<User> getUser(){
-        return userMapper.getUser();
+        return loginService.getUser();
     }
 
-    @RequestMapping({"/api/login","/"})
-    public String login(@RequestBody LoginRequest request){
+    @RequestMapping({"/api/login/email"})
+    public LocalToken loginByEmail(@RequestBody LoginRequest request){
         String email = request.getEmail();
         String password = request.getPassword();
-        System.out.println("收到登录请求: " + email + "+" + password); // 添加日志
 
-        //调用mapper
-        Integer db_id = userMapper.getIDByEmail(email);
-        if(db_id==null){
-            //用户不存在，提示注册
-            return "wrong username";
-        }else {
-            String db_password = userMapper.getPassword(db_id);
-            if(password.equals(db_password)){
-                //用户名和密码匹配
-                return "ok";
-            }else{
-                return "wrong password";
-            }
-        }
+        System.out.println("收到登录请求: " + "email = " + email + "; password = " + password); // 添加日志
+        LocalToken response = loginService.loginByEmail(email, password);
+        System.out.println("登录请求状态: " + response.getStatus());  //添加日志
+
+        return response;
+    }
+
+    @RequestMapping({"/api/login/phoneNumber"})
+    public LocalToken loginByPhoneNumber(@RequestBody LoginRequest request){
+        Long phoneNumber = request.getPhoneNumber();
+        String password = request.getPassword();
+
+        System.out.println("收到登录请求: " + "phoneNumber = " + phoneNumber + "; password = " + password); // 添加日志
+        LocalToken response = loginService.loginByPhoneNumber(phoneNumber, password);
+        System.out.println("登录请求状态: " + response.getStatus());  //添加日志
+
+        return response;
     }
 
 }

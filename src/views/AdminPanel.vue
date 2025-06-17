@@ -185,9 +185,9 @@
                 class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
               >
                 <option value="">全部状态</option>
-                <option value="normal">正常</option>
-                <option value="hidden">隐藏</option>
-                <option value="deleted">已删除</option>
+                <option v-bind:value="POST_STATUS_NORMAL">正常</option>
+                <option v-bind:value="POST_STATUS_HIDDEN">隐藏</option>
+                <option v-bind:value="POST_STATUS_DELETED">已删除</option>
               </select>
             </div>
             
@@ -279,8 +279,8 @@
                     <span 
                       :class="[
                         'px-2 inline-flex text-xs leading-5 font-semibold rounded-full',
-                        post.status === 'normal' ? 'bg-green-100 text-green-800' : 
-                        post.status === 'hidden' ? 'bg-yellow-100 text-yellow-800' : 
+                        post.status === POST_STATUS_NORMAL ? 'bg-green-100 text-green-800' : 
+                        post.status === POST_STATUS_HIDDEN ? 'bg-yellow-100 text-yellow-800' : 
                         'bg-red-100 text-red-800'
                       ]"
                     >
@@ -296,22 +296,22 @@
                         查看
                       </button>
                       <button 
-                        v-if="post.status !== 'normal'"
-                        @click="changePostStatus(post.postID, 'normal')" 
+                        v-if="post.status !== POST_STATUS_NORMAL"
+                        @click="changePostStatus(post.postID, POST_STATUS_NORMAL)" 
                         class="text-green-600 hover:text-green-900"
                       >
                         恢复
                       </button>
                       <button 
-                        v-if="post.status !== 'hidden'"
-                        @click="changePostStatus(post.postID, 'hidden')" 
+                        v-if="post.status !== POST_STATUS_HIDDEN"
+                        @click="changePostStatus(post.postID, POST_STATUS_HIDDEN)" 
                         class="text-yellow-600 hover:text-yellow-900"
                       >
                         隐藏
                       </button>
                       <button 
-                        v-if="post.status !== 'deleted'"
-                        @click="changePostStatus(post.postID, 'deleted')" 
+                        v-if="post.status !== POST_STATUS_DELETED"
+                        @click="changePostStatus(post.postID, POST_STATUS_DELETED)" 
                         class="text-red-600 hover:text-red-900"
                       >
                         删除
@@ -351,6 +351,7 @@
           </div>
         </div>
 
+
         <!-- 用户管理 -->
         <div v-if="activeTab === 'users'" class="p-6">
           <!-- 搜索和筛选 -->
@@ -372,8 +373,8 @@
                 class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
               >
                 <option value="">全部状态</option>
-                <option value="normal">正常</option>
-                <option value="banned">已封禁</option>
+                <option v-bind:value="USER_STATUS_NORMAL">正常</option>
+                <option v-bind:value="USER_STATUS_BANNED">已封禁</option>
               </select>
             </div>
             
@@ -457,17 +458,17 @@
                     <span 
                       :class="[
                         'px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full',
-                        user.role === 'admin' ? 'bg-purple-100 text-purple-800' : 'bg-gray-100 text-gray-800'
+                        user.role === USER_ROLE_ADMIN ? 'bg-purple-100 text-purple-800' : 'bg-gray-100 text-gray-800'
                       ]"
                     >
-                      {{ user.role === 'admin' ? '管理员' : '普通用户' }}
+                      {{ user.role === USER_ROLE_ADMIN ? '管理员' : '普通用户' }}
                     </span>
                   </td>
                   <td class="px-6 py-4 whitespace-nowrap">
                     <span 
                       :class="[
                         'px-2 inline-flex text-xs leading-5 font-semibold rounded-full',
-                        user.status === 'normal' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
+                        user.status === POST_STATUS_NORMAL ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
                       ]"
                     >
                       {{ getUserStatusText(user.status) }}
@@ -482,15 +483,15 @@
                         查看
                       </button>
                       <button 
-                        v-if="user.status === 'normal'"
-                        @click="changeUserStatus(user.userID, 'banned')" 
+                        v-if="user.status === POST_STATUS_NORMAL"
+                        @click="changeUserStatus(user.userID, USER_STATUS_BANNED)" 
                         class="text-red-600 hover:text-red-900"
                       >
                         封禁
                       </button>
                       <button 
                         v-else
-                        @click="changeUserStatus(user.userID, 'normal')" 
+                        @click="changeUserStatus(user.userID, POST_STATUS_NORMAL)" 
                         class="text-green-600 hover:text-green-900"
                       >
                         解封
@@ -528,6 +529,8 @@
               </button>
             </div>
           </div>
+
+
         </div>
       </div>
     </div>
@@ -551,8 +554,8 @@
               <span 
                 :class="[
                   'px-2 py-1 text-xs font-semibold rounded-full',
-                  selectedPost.status === 'normal' ? 'bg-green-100 text-green-800' : 
-                  selectedPost.status === 'hidden' ? 'bg-yellow-100 text-yellow-800' : 
+                  selectedPost.status === POST_STATUS_NORMAL ? 'bg-green-100 text-green-800' : 
+                  selectedPost.status === POST_STATUS_HIDDEN ? 'bg-yellow-100 text-yellow-800' : 
                   'bg-red-100 text-red-800'
                 ]"
               >
@@ -595,22 +598,22 @@
             
             <div class="flex justify-end space-x-3 pt-4 border-t border-gray-200">
               <button 
-                v-if="selectedPost.status !== 'normal'"
-                @click="changePostStatus(selectedPost.postID, 'normal'); showPostModal = false" 
+                v-if="selectedPost.status !== POST_STATUS_NORMAL"
+                @click="changePostStatus(selectedPost.postID, POST_STATUS_NORMAL); showPostModal = false" 
                 class="px-3 py-1 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
               >
                 恢复帖子
               </button>
               <button 
-                v-if="selectedPost.status !== 'hidden'"
-                @click="changePostStatus(selectedPost.postID, 'hidden'); showPostModal = false" 
+                v-if="selectedPost.status !== POST_STATUS_HIDDEN"
+                @click="changePostStatus(selectedPost.postID, POST_STATUS_HIDDEN); showPostModal = false" 
                 class="px-3 py-1 bg-yellow-600 text-white rounded-lg hover:bg-yellow-700 transition-colors"
               >
                 隐藏帖子
               </button>
               <button 
-                v-if="selectedPost.status !== 'deleted'"
-                @click="changePostStatus(selectedPost.postID, 'deleted'); showPostModal = false" 
+                v-if="selectedPost.status !== POST_STATUS_DELETED"
+                @click="changePostStatus(selectedPost.postID, POST_STATUS_DELETED); showPostModal = false" 
                 class="px-3 py-1 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
               >
                 删除帖子
@@ -656,15 +659,15 @@
                   <span 
                     :class="[
                       'px-2 py-1 text-xs font-semibold rounded-full mr-2',
-                      selectedUser.role === 'admin' ? 'bg-purple-100 text-purple-800' : 'bg-gray-100 text-gray-800'
+                      selectedUser.role === USER_ROLE_ADMIN ? 'bg-purple-100 text-purple-800' : 'bg-gray-100 text-gray-800'
                     ]"
                   >
-                    {{ selectedUser.role === 'admin' ? '管理员' : '普通用户' }}
+                    {{ selectedUser.role === USER_ROLE_ADMIN ? '管理员' : '普通用户' }}
                   </span>
                   <span 
                     :class="[
                       'px-2 py-1 text-xs font-semibold rounded-full',
-                      selectedUser.status === 'normal' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
+                      selectedUser.status === USER_STATUS_NORMAL ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
                     ]"
                   >
                     {{ getUserStatusText(selectedUser.status) }}
@@ -716,15 +719,15 @@
             
             <div class="flex justify-end space-x-3 pt-4 border-t border-gray-200">
               <button 
-                v-if="selectedUser.status === 'normal'"
-                @click="changeUserStatus(selectedUser.userID, 'banned'); showUserModal = false" 
+                v-if="selectedUser.status === USER_STATUS_NORMAL"
+                @click="changeUserStatus(selectedUser.userID, USER_STATUS_BANNED); showUserModal = false" 
                 class="px-3 py-1 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
               >
                 封禁用户
               </button>
               <button 
                 v-else
-                @click="changeUserStatus(selectedUser.userID, 'normal'); showUserModal = false" 
+                @click="changeUserStatus(selectedUser.userID, USER_STATUS_NORMAL); showUserModal = false" 
                 class="px-3 py-1 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
               >
                 解除封禁
@@ -740,14 +743,30 @@
         </div>
       </div>
     </div>
+
   </div>
 </template>
 
 <script>
+import { getAllPost, getAllUser, updatePostStatus, updateUserStatus } from '../services/api'
+
 export default {
   name: 'AdminPanel',
   data() {
     return {
+      //帖子状态常量
+      POST_STATUS_NORMAL: "NORMAL",
+      POST_STATUS_DELETED: "DELETED",
+      POST_STATUS_HIDDEN: "HIDDEN",
+
+      //用户状态常量
+      USER_STATUS_NORMAL: "NORMAL",
+      USER_STATUS_BANNED: "BANNED",
+
+      //用户角色常量
+      USER_ROLE_ADMIN: "ROLE_ADMIN",
+      USER_ROLE_USER: "ROLE_USER",
+
       activeTab: 'posts',
       showNotifications: false,
       showUserMenu: false,
@@ -905,44 +924,29 @@ export default {
       this.$router.push('/login')
     },
     
-    // 帖子管理方法
-    async fetchPosts() {
-      try {
-        // 模拟API请求
-        await new Promise(resolve => setTimeout(resolve, 300))
-        
-        // 模拟数据
-        const mockPosts = []
-        for (let i = 1; i <= 50; i++) {
-          const status = ['normal', 'hidden', 'deleted'][Math.floor(Math.random() * 3)]
-          const isHot = Math.random() > 0.8
-          
-          mockPosts.push({
-            postID: i,
-            userID: Math.floor(Math.random() * 100) + 1,
-            username: `用户${Math.floor(Math.random() * 100) + 1}`,
-            title: `帖子标题 ${i} - 这是一个示例帖子标题，可能会很长很长很长很长很长`,
-            content: `<p>这是帖子 ${i} 的内容。</p><p>这是一个示例内容，包含多个段落。</p><p>可以包含<strong>加粗</strong>、<em>斜体</em>等格式。</p>`,
-            likeCount: Math.floor(Math.random() * 200),
-            commentCount: Math.floor(Math.random() * 50),
-            createTime: new Date(Date.now() - Math.floor(Math.random() * 30) * 24 * 60 * 60 * 1000),
-            status: status,
-            isHot: isHot
-          })
-        }
-        
-        this.posts = mockPosts
-      } catch (error) {
-        console.error('获取帖子列表失败:', error)
-        this.showToast('error', '获取帖子列表失败', '请稍后重试')
-      }
+    async fetchPosts(){
+      try{
+        this.posts = await getAllPost()
+        this.posts = this.posts.map(post => ({
+          ...post,
+          summary: post.content.substring(0, 10) + '...',
+          time: this.$formatTime(new Date(post.createTime)),
+          avatar: null
+        }));
+      }catch(error){
+        console.log("控制台获取帖子出错: ", error)
+      } 
     },
     
     async changePostStatus(postId, status) {
       try {
-        // 模拟API请求
-        await new Promise(resolve => setTimeout(resolve, 300))
+        let isValid = await updatePostStatus(postId, status)
         
+        if(!isValid){
+          this.showToast('error', '操作失败', '更改帖子状态失败，请重试')
+          return
+        }
+
         // 更新本地数据
         const post = this.posts.find(p => p.postID === postId)
         if (post) {
@@ -984,39 +988,21 @@ export default {
     
     // 用户管理方法
     async fetchUsers() {
-      try {
-        // 模拟API请求
-        await new Promise(resolve => setTimeout(resolve, 300))
-        
-        // 模拟数据
-        const mockUsers = []
-        for (let i = 1; i <= 50; i++) {
-          const status = Math.random() > 0.9 ? 'banned' : 'normal'
-          const role = Math.random() > 0.9 ? 'admin' : 'user'
-          
-          mockUsers.push({
-            userID: i,
-            username: `用户${i}`,
-            email: `user${i}@example.com`,
-            phoneNumber: `1${Math.floor(Math.random() * 9000000000) + 1000000000}`,
-            initDate: new Date(Date.now() - Math.floor(Math.random() * 365) * 24 * 60 * 60 * 1000),
-            profilePicture: null,
-            role: role,
-            status: status
-          })
-        }
-        
-        this.users = mockUsers
-      } catch (error) {
-        console.error('获取用户列表失败:', error)
-        this.showToast('error', '获取用户列表失败', '请稍后重试')
-      }
+      try{
+        this.users = await getAllUser()
+      }catch(error){
+        console.log("控制台获取帖子出错: ", error)
+      } 
     },
     
     async changeUserStatus(userId, status) {
       try {
-        // 模拟API请求
-        await new Promise(resolve => setTimeout(resolve, 300))
+        let isValid = await updateUserStatus(userId, status)
+        
+        if(!isValid){
+          this.showToast('error', '操作失败', '更改帖子状态失败，请重试')
+          return
+        }
         
         // 更新本地数据
         const user = this.users.find(u => u.userID === userId)
@@ -1069,19 +1055,21 @@ export default {
       return phoneStr.replace(/(\d{3})(\d{4})(\d{4})/, '$1-$2-$3')
     },
     
+    //获得帖子状态文本
     getPostStatusText(status) {
       switch (status) {
-        case 'normal': return '正常'
-        case 'hidden': return '隐藏'
-        case 'deleted': return '已删除'
+        case this.POST_STATUS_NORMAL: return '正常'
+        case this.POST_STATUS_HIDDEN: return '隐藏'
+        case this.POST_STATUS_DELETED: return '已删除'
         default: return '未知'
       }
     },
     
+    //获得用户状态文本
     getUserStatusText(status) {
       switch (status) {
-        case 'normal': return '正常'
-        case 'banned': return '已封禁'
+        case this.USER_STATUS_NORMAL: return '正常'
+        case this.USER_STATUS_BANNED: return '已封禁'
         default: return '未知'
       }
     },

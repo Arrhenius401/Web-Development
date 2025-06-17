@@ -10,6 +10,9 @@
 
 import axios from 'axios';
 
+//定义常量
+const SELECT_REQUEST_SUBJECT_POST = "GET_POSTS";
+const SELECT_REQUEST_SUBJECT_USER = "GET_USERS";
 
 //创建axios实例
 const service = axios.create({
@@ -35,7 +38,7 @@ export const checkToken = (token) =>{
 //验证本地令牌是否有管理员权限
 export const checkAdmin = (token) =>{
   //添加日志
-  console.log("传输并验证本地令牌: ", token)
+  console.log("传输并验证可能含管理员权限的本地令牌: ", token)
   return service.post('/checkAdmin',token)
   .then(response => response.data)
   .catch(error => {
@@ -89,7 +92,7 @@ export const registerDefaultUser = (username, email, phoneNumber, password) => {
 }
 
 
-//(3)帖子模版
+//(3)主页模块
 export const getHomePost = () => {
   return service.post('/post/home')
   .then(response => response.data)
@@ -99,4 +102,96 @@ export const getHomePost = () => {
   })
 }
 
+//(4)控制台模块
+//使用指标、数目和偏移量获取帖子
+export const getAdminPanelPostStand = (order, limit, offset) => {
+  return service.post('/stand/post',{
+    subject: SELECT_REQUEST_SUBJECT_POST,
+    order: order,
+    limit: limit,
+    offset: offset
+  })
+  .then(response => response.data)
+  .catch(error => {
+    console.error("以标准方式获取控制台处帖子失败", error)
+    throw error
+  })
+}
+
+//使用指标、数目和偏移量获取用户
+export const getAdminPanelUserStand = (order, limit, offset) => {
+  return service.post('/stand/user',{
+    subject: SELECT_REQUEST_SUBJECT_USER,
+    order: order,
+    limit: limit,
+    offset: offset
+  })
+  .then(response => response.data)
+  .catch(error => {
+    console.error("以标准方式获取控制台处帖子失败", error)
+    throw error
+  })
+}
+
+//风险方法
+//获取所有帖子
+export const getAllPost = () => {
+  return service.post('/post/all')
+  .then(response => response.data)
+  .catch(error => {
+    console.error("获取所有帖子失败", error)
+    throw error
+  })
+}
+
+
+//风险方法
+//获取所有帖子
+export const getAllUser = () => {
+  return service.post('/user/all')
+  .then(response => response.data)
+  .catch(error => {
+    console.error("获取所有用户失败", error)
+    throw error
+  })
+}
+
+//更新帖子状态
+export const updatePostStatus = (postID, status) => {
+  return service.post('/post/updateStatus',{
+    postID: postID,
+    status: status
+  })
+  .then(response => response.data)
+  .catch(error => {
+    console.error("更新帖子状态失败", error)
+    throw error
+  })
+}
+
+//更新用户状态
+export const updateUserStatus = (userID, status) => {
+  return service.post('/user/updateStatus',{
+    userID: userID,
+    status: status
+  })
+  .then(response => response.data)
+  .catch(error => {
+    console.error("更新用户状态失败", error)
+    throw error
+  })
+}
+
+//(5)个人主页模块
+//更新用户状态
+export const getPostByUserID = (userID) => {
+  return service.post('/post/byUserID',{
+    userID: userID
+  })
+  .then(response => response.data)
+  .catch(error => {
+    console.error("传输指定用户创建帖子的请求失败", error)
+    throw error
+  })
+}
 

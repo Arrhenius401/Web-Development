@@ -31,13 +31,10 @@ export default {
   },
   data(){
     return{
-      loaclToken: '',
       imageViewerVisible: false,
       imageViewerImages: [],
       imageViewIndex: 0
     }
-  },create(){
-    this.localToken = JSON.parse(window.localStorage.getItem("local-token"))
   },
   methods: {
     logout() {

@@ -378,23 +378,6 @@ export default {
       delete this.errors.username
       this.usernameChecked = true
       this.checkingUsername = false
-      /* try {
-        await new Promise(resolve => setTimeout(resolve, 1000))
-        // 模拟检查结果
-        const isAvailable = Math.random() > 0.3
-        if (!isAvailable) {
-          this.errors.username = '用户名已被使用'
-          this.usernameChecked = false
-        } else {
-          delete this.errors.username
-          this.usernameChecked = true
-        }
-      } catch (error) {
-        this.errors.username = '检查用户名时出错'
-        this.usernameChecked = false
-      } finally {
-        this.checkingUsername = false
-      } */
       
       return !this.errors.username
     },
